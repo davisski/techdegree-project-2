@@ -3,8 +3,8 @@ Treehouse Techdegree:
 FSJS project 2 - List Filter and Pagination
 ******************************************/
 /**
- * @global {studentList} - List of student list items
- * @global {perpage} - Number of items per view
+ * @global {studentList} - List of student list items.
+ * @global {perpage} - Number of items per view.
  */
 const studentList = document.querySelectorAll(".student-item");
 const perPage = 10;
@@ -35,7 +35,7 @@ const showPage = (list, page) => {
   }
 };
 /**
- * @function {showPage} - Calling function to initialize list pagination
+ * @function {showPage} - Calling function to initialize list items.
  */
 showPage(studentList, 1);
 
@@ -59,8 +59,8 @@ const appendPageLinks = (list) => {
   /**
    *
    * @param {elem} - DOM element which whant to make.
-   * @param {prop} - Default value is set to undefined, to create any other element without passing prop to a function
-   * @param {value} - Default value is set to undefined, to create any other element without passing value to a function
+   * @param {prop} - Default value is set to undefined, to create any other element without passing prop to a function.
+   * @param {value} - Default value is set to undefined, to create any other element without passing value to a function.
    * @returns created DOM element.
    *
    */
@@ -69,25 +69,25 @@ const appendPageLinks = (list) => {
     element[prop] = value;
     return element;
   }
-  // div for pagination
+  // div for pagination.
   const div = createElement("div", "className", "pagination");
   const ul = createElement("ul");
   div.appendChild(ul);
 
-  // loop through pages and create, add HTML elements to pagination list
+  // loop through pages and create, add HTML elements to pagination list.
   for (let i = 1; i <= pages; i += 1) {
     const li = createElement("li");
     const anhor = createElement("a", "textContent", i);
     li.appendChild(anhor);
     ul.appendChild(li);
   }
-  // append pagination to container
+  // append pagination to container.
   container.appendChild(div);
 
   const links = document.querySelectorAll(".pagination ul li a");
   /**
    * @function {handleClick} - Listen on event, and calls @function {loopThroughLinks}, @function {setActiveLink}, @function {showPage} and store current page in @constant {page}
-   * @param {link} - Variable of DOM element
+   * @param {link} - Variable of DOM element.
    * @event {`click`} - Every link object listens on click event and then calls @function {loopThroughLinks} - with first class citizen @function {removeActiveLink}.
    * @function {loopThroughLinks} - Calling loopThroughLinks to loop through anhor array and pass @function {removeActiveLink} to do on every anhor in array.
    * @function {setActiveLink} - Call to set new active anhor.
@@ -105,7 +105,7 @@ const appendPageLinks = (list) => {
   }
   /**
    *
-   * @param {link} - Variable of DOM element - removes DOM element property className
+   * @param {link} - Variable of DOM element - removes DOM element property className.
    *
    */
   function removeActiveLink(link) {
@@ -132,8 +132,113 @@ const appendPageLinks = (list) => {
       func(links[i]);
     }
   }
-  // Initialize click event on every anhor link
+  // Initialize click event on every anhor link.
   loopThroughLinks(handleClick);
 };
-// Append page links
+// Append page links.
 appendPageLinks(studentList);
+
+/**
+ *
+ * @param {list} - Array variable of list items.
+ * @constant {pageHeader} - Store page header DOM element.
+ * @constant {container} - Store app container DOM element.
+ * @var {matchedStudents} - Variable which will be assigned as empty array, and then filled with student list items, base on search query value.
+ * @function {displaySearch} - Function returns search component HTML structure.
+ * @constant {input} - Store search input element.
+ * @event {`keyup`} - Listen on keyup event on input element.
+ * @method {replace} - Returns new string with replaced pattern @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace
+ * @method {trim} - Removes whitespaces on strings - more info @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/Trim
+ * @method {split} - Split method converts string into array - more info @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/split
+ * @method {includes} - Checks if string contains characters from another string - more info @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/includes
+ * @constant {listItem} - Store current item.
+ * @constant {listItemText} - Store every student textContent - modified with @method {replace} - which take regular expression pattern as first argument. @method {trim}, @method {split}.
+ * @see About regular expressions - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Regular_Expressions
+ * @constant {fullName} - Store every student full name.
+ * @function {createStudentErrorMsg} - Creates error message.
+ * @function {appendPageLinks} - Append page links base on search results.
+ * @function {showPage} - Initialize list items base on search results.
+ *
+ */
+const search = (list) => {
+  const pageHeader = document.querySelector(".page-header");
+  const container = document.querySelector(".page");
+  let matchedStudents;
+  function displaySearch() {
+    return ` <div class="student-search">
+     <input placeholder="Search for students...">
+     <button>Search</button>
+     </div>`;
+  }
+  pageHeader.innerHTML += displaySearch();
+
+  const input = document.querySelector("input");
+
+  input.addEventListener("keyup", (e) => {
+    matchedStudents = [];
+    let query;
+    for (let i = 0; i < list.length; i += 1) {
+      const listItem = list[i];
+      query = e.target.value;
+      const listItemText = listItem.textContent
+        .replace(/\s+/g, " ")
+        .trim()
+        .split(" ");
+      const fullName = listItemText[0] + " " + listItemText[1];
+
+      // checks if fullName includes search query.
+      if (fullName.includes(query)) {
+        // pushes matched student to array.
+        matchedStudents.push(listItem);
+      }
+    }
+    /**
+     * @constant {div} - Store created new div element.
+     * @property {className} - Assign newly created div class 'student-error'.
+     * @property {textContent} - Assign newly created div textContent.
+     * @property {style} - To add some style to error msg.
+     * @method {appendChild} - Append newly created div element to @constant {pageHeader}
+     */
+    function createStudentErrorMsg() {
+      const div = document.createElement("div");
+      div.className = "student-error";
+      div.textContent = `Student with name: ${query} doesn't exists`;
+      div.style.padding = "5px 0 0 20px";
+      div.style.color = "red";
+      pageHeader.appendChild(div);
+    }
+    // remove pagination links
+    container.removeChild(container.lastElementChild);
+    // add new pagination links base on matched student list items
+    appendPageLinks(matchedStudents);
+    // checks if matched students length is less or equal to page per view - if it is removes pagination links.
+    if (matchedStudents.length <= perPage) {
+      container.lastElementChild.innerHTML = "";
+    }
+
+    // checks if not matched students.
+    if (matchedStudents.length === 0) {
+      // checks if has already student error.
+      if (pageHeader.querySelector(".student-error")) {
+        // if has remove child from parent node.
+        pageHeader.removeChild(pageHeader.querySelector(".student-error"));
+
+        // calling to create new error msg.
+        createStudentErrorMsg();
+      } else {
+        // calling to create new error msg.
+        createStudentErrorMsg();
+      }
+    } else {
+      // checks again if has student error.
+      if (pageHeader.querySelector(".student-error")) {
+        // removes student error.
+        pageHeader.removeChild(pageHeader.querySelector(".student-error"));
+      }
+    }
+    //Initialize list items base on search results.
+    showPage(matchedStudents, 1);
+  });
+};
+// Initialize search
+search(studentList);
