@@ -139,7 +139,7 @@ const appendPageLinks = (list) => {
 appendPageLinks(studentList);
 
 /**
- *
+ * @function {search} - Creates search component on app, and add functionality to it.
  * @param {list} - Array variable of list items.
  * @constant {pageHeader} - Store page header DOM element.
  * @constant {container} - Store app container DOM element.
